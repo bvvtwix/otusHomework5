@@ -35,38 +35,47 @@ public class homework {
         }
     }
 
-    // 1)
-    @Test
-    public void headless() throws InterruptedException {
+    public void openHeadlessMode(){
         driver.quit();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("headless");
         driver = new ChromeDriver(options);
+    }
+
+    // 1)
+    @Test
+    public void headless() throws InterruptedException {
         // Открыть Chrome в headless режиме
+        openHeadlessMode();
+
         // Перейти на https://duckduckgo.com/
-        driver.get("https://duckduckgo.com/");
+        driver.get(cfg.urlDuckDuck());
         logger.info("duckduckgo opened");
+
         // В поисковую строку ввести ОТУС
         driver.findElement(By.id("search_form_input_homepage")).sendKeys("ОТУС", Keys.ENTER);
         logger.info("try to find ОТУС");
+
         // Проверить что в поисковой выдаче первый результат Онлайн‑курсы для профессионалов, дистанционное обучение
         String actualString = driver.findElement(By.xpath("//div[@id='r1-0']//a[contains(text(), 'Онлайн‑курсы для профессионалов')]")).getText();
         Assert.assertTrue(actualString.contains("Онлайн‑курсы для профессионалов"));
         logger.info("ОТУС found");
-
     }
 
     // 2)
     @Test
     public void kiosk() throws InterruptedException {
         //Перейти на https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818
-        driver.get("https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818");
+        driver.get(cfg.urlw3layouts());
         logger.info("demo.w3layouts.com opened");
+
         //Открыть Chrome в режиме киоска
         driver.manage().window().fullscreen();
+
         //Нажать на любую картинку
         driver.findElement(By.xpath("//li[@data-id='id-1']")).click();
         logger.info("click to picture");
+
         //Проверить что картинка открылась в модальном окне
         Assert.assertTrue(driver.findElement(By.cssSelector(".pp_content_container")).isDisplayed());
         logger.info("modal window found");
@@ -76,13 +85,16 @@ public class homework {
     @Test
     public void cookies() throws InterruptedException {
         //Перейти на https://otus.ru
-        driver.get("https://otus.ru");
+        driver.get(cfg.urlOtus());
         logger.info("otus opened");
+
         // Открыть Chrome в режиме полного экрана
         driver.manage().window().maximize();
         logger.info("full screen browser opened");
+
         // Авторизоваться под каким-нибудь тестовым пользователем
         auth();
+
         // Вывести в лог все cookie
         logger.info(driver.manage().getCookies());
     }
@@ -94,6 +106,5 @@ public class homework {
         driver.findElement(By.cssSelector("button[type='submit'][class='new-button new-button_full new-button_blue new-button_md']")).click();
         logger.info("Auth completed");
     }
-
 
 }
