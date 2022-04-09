@@ -26,7 +26,7 @@ public class homework {
     private String maxMode = "--start-maximized";
 
     @After
-    private void close() {
+    public void close() {
         if (driver != null) {
             driver.quit();
         }
@@ -42,7 +42,7 @@ public class homework {
 
     // 1)
     @Test
-    private void headless() throws InterruptedException {
+    public void headless() throws InterruptedException {
         // Открыть Chrome в headless режиме
         initDriver(headlessMode);
 
@@ -62,7 +62,7 @@ public class homework {
 
     // 2)
     @Test
-    private void kiosk() throws InterruptedException {
+    public void kiosk() throws InterruptedException {
         //Открыть Chrome в режиме киоска
         initDriver(kioskMode);
 
@@ -81,7 +81,7 @@ public class homework {
 
     // 3)
     @Test
-    private void cookies() throws InterruptedException {
+    public void cookies() throws InterruptedException {
         // Открыть Chrome в режиме полного экрана
         initDriver(maxMode);
         logger.info("full screen browser opened");
