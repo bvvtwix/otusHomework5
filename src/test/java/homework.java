@@ -6,47 +6,45 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class homework {
 
     private Logger logger = LogManager.getLogger(homework.class);
-    protected ConfigServer cfg = ConfigFactory.create(ConfigServer.class);
-    WebDriver driver;
+    private ConfigServer cfg = ConfigFactory.create(ConfigServer.class);
+    private WebDriver driver;
 
-    @Before
-    public void setUp() {
-        WebDriverManager.chromedriver().setup();
-        driver = new ChromeDriver();
-        driver.manage().timeouts().implicitlyWait(8, TimeUnit.SECONDS);
-    }
+    private String kioskMode = "--kiosk";
+    private String headlessMode = "headless";
+    private String maxMode = "--start-maximized";
 
     @After
-    public void close() {
+    private void close() {
         if (driver != null) {
             driver.quit();
         }
     }
 
-    public void openHeadlessMode(){
-        driver.quit();
+    private void initDriver(String mode){
+        WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("headless");
+        options.addArguments(mode);
         driver = new ChromeDriver(options);
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(3));
     }
 
     // 1)
     @Test
-    public void headless() throws InterruptedException {
+    private void headless() throws InterruptedException {
         // Открыть Chrome в headless режиме
-        openHeadlessMode();
+        initDriver(headlessMode);
 
         // Перейти на https://duckduckgo.com/
         driver.get(cfg.urlDuckDuck());
@@ -64,13 +62,13 @@ public class homework {
 
     // 2)
     @Test
-    public void kiosk() throws InterruptedException {
-        //Перейти на https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818
-        driver.get(cfg.urlw3layouts());
-        logger.info("demo.w3layouts.com opened");
-
+    private void kiosk() throws InterruptedException {
         //Открыть Chrome в режиме киоска
-        driver.manage().window().fullscreen();
+        initDriver(kioskMode);
+
+        //Перейти на https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818
+        driver.get( cfg.urlw3layouts());
+        logger.info("demo.w3layouts.com opened");
 
         //Нажать на любую картинку
         driver.findElement(By.xpath("//li[@data-id='id-1']")).click();
@@ -83,23 +81,34 @@ public class homework {
 
     // 3)
     @Test
-    public void cookies() throws InterruptedException {
+    private void cookies() throws InterruptedException {
+        // Открыть Chrome в режиме полного экрана
+        initDriver(maxMode);
+        logger.info("full screen browser opened");
+
         //Перейти на https://otus.ru
         driver.get(cfg.urlOtus());
         logger.info("otus opened");
-
-        // Открыть Chrome в режиме полного экрана
-        driver.manage().window().maximize();
-        logger.info("full screen browser opened");
 
         // Авторизоваться под каким-нибудь тестовым пользователем
         auth();
 
         // Вывести в лог все cookie
-        logger.info(driver.manage().getCookies());
+        printCookies();
     }
 
-    public void auth() throws InterruptedException {
+    private void printCookies(){
+        logger.info("Cookies:");
+
+        Set<Cookie> coolies = driver.manage().getCookies();
+
+        for (Cookie cookie : coolies){
+            logger.info(String.format("%s : %s" , cookie.getName(), cookie.getValue()));
+        }
+
+    }
+
+    private void auth() throws InterruptedException {
         driver.findElement(By.cssSelector("button[data-modal-id=\"new-log-reg\"]")).click();
         driver.findElement(By.cssSelector("input.new-input[name='email'][type='text']")).sendKeys(cfg.email());
         driver.findElement(By.cssSelector("input.new-input[name='password'][type='password']")).sendKeys(cfg.pass());
