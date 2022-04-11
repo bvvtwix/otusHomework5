@@ -4,26 +4,23 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
-public class homework {
+public class TestBrowserMode {
 
-    private Logger logger = LogManager.getLogger(homework.class);
+    private Logger logger = LogManager.getLogger(TestBrowserMode.class);
     private ConfigServer cfg = ConfigFactory.create(ConfigServer.class);
     private WebDriver driver;
 
-    private String kioskMode = "--kiosk";
-    private String headlessMode = "headless";
-    private String maxMode = "--start-maximized";
+    private String kioskMode = ChromeArgumentsData.KIOSK.toString();
+    private String headlessMode = ChromeArgumentsData.HEADLESS.toString();
+    private String maxMode = ChromeArgumentsData.MAXIMAZE.toString();
 
     @After
     public void close() {
@@ -108,7 +105,7 @@ public class homework {
 
     }
 
-    private void auth() throws InterruptedException {
+    private void auth(){
         driver.findElement(By.cssSelector("button[data-modal-id=\"new-log-reg\"]")).click();
         driver.findElement(By.cssSelector("input.new-input[name='email'][type='text']")).sendKeys(cfg.email());
         driver.findElement(By.cssSelector("input.new-input[name='password'][type='password']")).sendKeys(cfg.pass());
