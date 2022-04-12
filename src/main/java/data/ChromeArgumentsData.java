@@ -1,3 +1,5 @@
+package data;
+
 public enum ChromeArgumentsData {
 
     KIOSK("--kiosk"),

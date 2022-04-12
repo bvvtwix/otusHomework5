@@ -1,3 +1,5 @@
+import config.ConfigServer;
+import data.ChromeArgumentsData;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.aeonbits.owner.ConfigFactory;
 import org.apache.logging.log4j.LogManager;
@@ -18,10 +20,6 @@ public class TestBrowserMode {
     private ConfigServer cfg = ConfigFactory.create(ConfigServer.class);
     private WebDriver driver;
 
-    private String kioskMode = ChromeArgumentsData.KIOSK.toString();
-    private String headlessMode = ChromeArgumentsData.HEADLESS.toString();
-    private String maxMode = ChromeArgumentsData.MAXIMAZE.toString();
-
     @After
     public void close() {
         if (driver != null) {
@@ -39,9 +37,9 @@ public class TestBrowserMode {
 
     // 1)
     @Test
-    public void headless() throws InterruptedException {
+    public void headless() {
         // Открыть Chrome в headless режиме
-        initDriver(headlessMode);
+        initDriver(ChromeArgumentsData.HEADLESS.toString());
 
         // Перейти на https://duckduckgo.com/
         driver.get(cfg.urlDuckDuck());
@@ -59,9 +57,9 @@ public class TestBrowserMode {
 
     // 2)
     @Test
-    public void kiosk() throws InterruptedException {
+    public void kiosk() {
         //Открыть Chrome в режиме киоска
-        initDriver(kioskMode);
+        initDriver(ChromeArgumentsData.KIOSK.toString());
 
         //Перейти на https://demo.w3layouts.com/demos_new/template_demo/03-10-2020/photoflash-liberty-demo_Free/685659620/web/index.html?_ga=2.181802926.889871791.1632394818-2083132868.1632394818
         driver.get( cfg.urlw3layouts());
@@ -78,17 +76,23 @@ public class TestBrowserMode {
 
     // 3)
     @Test
-    public void cookies() throws InterruptedException {
+    public void cookies() {
         // Открыть Chrome в режиме полного экрана
-        initDriver(maxMode);
+        initDriver(ChromeArgumentsData.MAXIMAZE.toString());
         logger.info("full screen browser opened");
 
         //Перейти на https://otus.ru
         driver.get(cfg.urlOtus());
         logger.info("otus opened");
+        // главная страница otus.ru открыта
+        Assert.assertEquals("Авторские онлайн‑курсы для профессионалов", driver.findElement(By.xpath("//h1[contains(text(), 'Авторские онлайн‑курсы')]")).getText());
+        Assert.assertEquals("Цифровые навыки от ведущих экспертов",  driver.findElement(By.xpath("//h2[contains(text(), 'Цифровые навыки от ведущих экспертов')]")).getText());
 
         // Авторизоваться под каким-нибудь тестовым пользователем
         auth();
+
+        // check auth
+        Assert.assertEquals("Test", driver.findElement(By.xpath("//p[@class='header2-menu__item-text header2-menu__item-text__username']")).getText());
 
         // Вывести в лог все cookie
         printCookies();
